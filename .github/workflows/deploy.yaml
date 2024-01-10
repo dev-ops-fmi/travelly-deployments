@@ -44,4 +44,4 @@ jobs:
 
       - name: Deploy Manifests
         run:
-          kubectl apply -k /overlays/${{ github.event.inputs.overlay }}
+          kubectl apply -k overlays/${{ github.event.inputs.overlay }}
