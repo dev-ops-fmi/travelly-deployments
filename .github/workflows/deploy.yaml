@@ -40,11 +40,8 @@ jobs:
 
       - name: Install NGINX Ingress Controller
         run:
-          k apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.9.5/deploy/static/provider/cloud/deploy.yaml
+          kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.9.5/deploy/static/provider/cloud/deploy.yaml
 
       - name: Deploy Manifests
         run:
-          k apply -k /overlays/${{ github.event.inputs.overlay }}
-        
-
-      
+          kubectl apply -k /overlays/${{ github.event.inputs.overlay }}
