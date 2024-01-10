@@ -19,9 +19,9 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Setup kubectl
+        uses: azure/setup-kubectl@v3
         with:
           version: '1.28.2'
-        uses: azure/setup-kubectl@v1
 
       - name: Prepare Kubeconfig
         run:  echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
@@ -30,18 +30,13 @@ jobs:
         run: kubectl apply -k common/
 
       - name: Generate Github Container Registry Pull Secret
-        env:
-          DOCKER_SERVER=ghcr.io
-          DOCKER_USER=${{ secrets.DOCKER_USER }}
-          DOCKER_PASS=${{ secrets.DOCKER_PASS }}
-          DOCKER_EMAIL=${{ secrets.DOCKER_EMAIL }}
         run: 
           kubectl create secret docker-registry ghcr-pull \
             -n travelly-internal \
-            --docker-server=$DOCKER_SERVER \
-            --docker-username=$DOCKER_USER \
-            --docker-password=$DOCKER_PASS \
-            --docker-email=$DOCKER_EMAIL
+            --docker-server=ghcr.io \
+            --docker-username=${{ secrets.DOCKER_USER }} \
+            --docker-password=${{ secrets.DOCKER_PASS }} \
+            --docker-email=${{ secrets.DOCKER_EMAIL }}
 
       - name: Install NGINX Ingress Controller
         run:
