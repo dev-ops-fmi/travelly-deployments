@@ -31,6 +31,8 @@ jobs:
 
       - name: Generate Github Container Registry Pull Secret
         run: |
+          kubectl delete secret ghcr-pull --ignore-not-found
+
           kubectl create secret docker-registry ghcr-pull \
             -n travelly-internal \
             --docker-server=ghcr.io \
