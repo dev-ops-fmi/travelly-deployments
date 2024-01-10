@@ -1,0 +1,57 @@
+name: Deploy to Kubernetes Cluster
+
+on:
+  workflow_dispatch:
+    inputs:
+      overlay:
+        type: choice
+        description: Which overlay to deploy
+        required: true
+        options:
+          - dev
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Setup kubectl
+        with:
+          version: '1.28.2'
+        uses: azure/setup-kubectl@v1
+
+      - name: Prepare Kubeconfig
+        run:  echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
+      
+      - name: Deploy Common
+        run: kubectl apply -k common/
+
+      - name: Generate Github Container Registry Pull Secret
+        env:
+          DOCKER_SERVER=ghcr.io
+          DOCKER_USER=${{ secrets.DOCKER_USER }}
+          DOCKER_PASS=${{ secrets.DOCKER_PASS }}
+          DOCKER_EMAIL=${{ secrets.DOCKER_EMAIL }}
+        run: 
+          kubectl create secret docker-registry ghcr-pull \
+            -n travelly-internal \
+            --docker-server=$DOCKER_SERVER \
+            --docker-username=$DOCKER_USER \
+            --docker-password=$DOCKER_PASS \
+            --docker-email=$DOCKER_EMAIL
+
+      - name: Install NGINX Ingress Controller
+        env:
+          DOWNLOAD_URL=https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.9.5/deploy/static/provider/cloud/deploy.yaml
+        run:
+          k apply -f $DOWNLOAD_URL
+
+      - name: Deploy Manifests
+        run:
+          k apply -k /overlays/${{ github.event.inputs.overlay }}
+        
+
+      
