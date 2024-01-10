@@ -44,10 +44,8 @@ jobs:
             --docker-email=$DOCKER_EMAIL
 
       - name: Install NGINX Ingress Controller
-        env:
-          DOWNLOAD_URL=https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.9.5/deploy/static/provider/cloud/deploy.yaml
         run:
-          k apply -f $DOWNLOAD_URL
+          k apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.9.5/deploy/static/provider/cloud/deploy.yaml
 
       - name: Deploy Manifests
         run:
