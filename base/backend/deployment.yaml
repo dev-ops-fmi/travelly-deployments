@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: travelly
+  labels:
+    app: travelly
+spec:
+  replicas: 3
+  strategy: 
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  selector:
+    matchLabels: 
+      app: travelly
+  template:
+    metadata:
+      labels:
+        app: travelly
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: backend
+        image: ghcr.io/dev-ops-fmi/4b942a51d2a39e30112d5020a8f434ee0a0ef425:latest
+        imagePullPolicy: Always
+        ports:
+        - name: tomcat-default
+          containerPort: 8080
+        resources:
+          requests:
+            cpu: 100m
+            memory: 200Mi
+          limits:
+            cpu: 200m
+            memory: 400Mi
+        startupProbe:
+          httpGet:
+            path: /actuator/health
+            port: tomcat-default
+          failureThreshold: 15
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /actuator/health
+            port: tomcat-default
+          initialDelaySeconds: 10
+          timeoutSeconds: 2
+          failureThreshold: 1
+        readinessProbe:
+          httpGet:
+            path: /actuator/health
+            port: tomcat-default
+          initialDelaySeconds: 5
+          timeoutSeconds: 2
+        env:
+        - name: DB_HOST
+          valueFrom:
+            configMapKeyRef: 
+              name: db-config
+              key: db.host
+        - name: DB_PORT
+          valueFrom:
+            configMapKeyRef: 
+              name: db-config
+              key: db.port
+        - name: DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: db-config
+              key: db.name
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: username
+        - name: DB_PASS
+          valueFrom:
+            secretKeyRef:
+              name: db-credentials
+              key: password
+      imagePullSecrets:
+      - name: ghcr-pull  

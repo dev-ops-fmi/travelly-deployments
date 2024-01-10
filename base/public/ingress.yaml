@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: travelly-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    nginx.org/proxy-connect-timeout: "20s"
+    nginx.org/proxy-read-timeout: "10s"
+    nginx.org/client-max-body-size: "2m"
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+    nginx.ingress.kubernetes.io/use-regex: "true"
+spec:
+  ingressClassName: nginx
+  rules:
+  - http:
+      paths:
+      - pathType: ImplementationSpecific
+        path: "/api/v1/(.*)"
+        backend:
+          service:
+            name: travelly
+            port:
+              number: 8080
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: travelly-frontend   
+            port: 
+              number: 80

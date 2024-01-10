@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: travelly-internal
+resources:
+  - ../../common
+  - ../../base
+configMapGenerator:
+  - name: db-config
+    literals:
+      - db.host=postgres
+      - db.port=5432
+      - db.name=travelly
+generatorOptions:
+  disableNameSuffixHash: true
