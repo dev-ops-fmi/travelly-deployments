@@ -20,7 +20,7 @@ spec:
       terminationGracePeriodSeconds: 10
       containers:
       - name: frontend
-        image: ghcr.io/dev-ops-fmi/beb382e58bd226e94b20d3b7b82df58082be20f5:latest
+        image: ghcr.io/dev-ops-fmi/travelly-frontend:v1.0.1
         imagePullPolicy: Always
         ports:
         - name: http

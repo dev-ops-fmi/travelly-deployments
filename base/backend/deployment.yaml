@@ -22,7 +22,7 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
       - name: backend
-        image: ghcr.io/dev-ops-fmi/4b942a51d2a39e30112d5020a8f434ee0a0ef425:latest
+        image: ghcr.io/dev-ops-fmi/travelly:v1.1.1
         imagePullPolicy: Always
         ports:
         - name: tomcat-default
